@@ -233,3 +233,29 @@ links.forEach(l => {
 new IntersectionObserver(([en]) => {
   if (en.isIntersecting) links.forEach(l => { l.classList.remove('active'); l.removeAttribute('aria-current'); });
 }, { rootMargin: '-45% 0px -50% 0px' }).observe(document.getElementById('home'));
+
+// Smooth in-page links without putting #section in the address bar
+function goTo(id, smooth = true) {
+  const target = document.getElementById(id);
+  if (!target) return false;
+  target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+  if (id === 'main') target.focus({ preventScroll: true });
+  return true;
+}
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    if (!id || !document.getElementById(id)) return;
+    e.preventDefault();
+    goTo(id);
+    history.replaceState(null, '', location.pathname + location.search);
+  });
+});
+// if someone opens a link that already has a #section, jump there, then clean the address
+if (location.hash.length > 1) {
+  const id = decodeURIComponent(location.hash.slice(1));
+  addEventListener('load', () => {
+    goTo(id, false);
+    history.replaceState(null, '', location.pathname + location.search);
+  });
+}
