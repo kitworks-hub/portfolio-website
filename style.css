@@ -90,7 +90,7 @@ main:focus { outline: none; }
 }
 .eyebrow { color: var(--b); font-weight: 500; letter-spacing: .15em; text-transform: uppercase; font-size: .9rem; }
 .hero h1 {
-  font: 700 clamp(3.2rem, 10vw, 8rem)/1.05 'Space Grotesk', sans-serif;
+  font: 700 clamp(2.6rem, 6.2vw, 6.5rem)/1.05 'Space Grotesk', sans-serif;
   background: var(--grad); background-size: 200% auto;
   -webkit-background-clip: text; background-clip: text; color: transparent;
   animation: shine 6s linear infinite; margin: 8px 0 12px;
@@ -112,7 +112,11 @@ main:focus { outline: none; }
 .btn.ghost { border: 1px solid var(--border); color: var(--text); background: var(--panel); }
 .btn.ghost:hover { border-color: var(--b); transform: translateY(-3px); }
 
+/* keep the text column clear of the photo: width left of the image minus a gap */
+.hero { --photo-h: min(90vh, 880px); --text-w: calc(100% - var(--photo-h) * .666 + 3vw - 48px); }
 .hero > *:not(.hero-photo):not(.scroll-hint) { position: relative; z-index: 2; }
+.hero > :where(:not(.hero-photo):not(.scroll-hint)) { max-width: var(--text-w); }
+.hero .lead { max-width: min(560px, var(--text-w)); }
 .hero-photo {
   position: absolute; right: clamp(0px, 5vw, 90px); bottom: 0; z-index: 1;
   height: min(90vh, 880px); pointer-events: none;
@@ -141,6 +145,7 @@ main:focus { outline: none; }
   mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
 }
 @media (max-width: 980px) and (min-width: 761px) {
+  .hero { --text-w: 72%; }
   .hero-photo { height: 58vh; right: -6vw; opacity: .45; }
 }
 .scroll-hint {
@@ -315,6 +320,7 @@ button.link:hover { color: var(--c); }
 
   /* hero: text on top, photo below, centered */
   .hero {
+    --text-w: 100%;
     min-height: 100vh; min-height: 100svh;
     justify-content: flex-start; align-items: stretch;
     padding: 84px 20px 0; text-align: left;
