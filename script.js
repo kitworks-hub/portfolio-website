@@ -1,6 +1,6 @@
 // Pop-ups (PDF viewer + workflow gallery)
 const pdfModal = document.getElementById('pdfModal');
-const pdfFrame = pdfModal.querySelector('iframe');
+const pdfPages = document.getElementById('pdfPages');
 const galModal = document.getElementById('galleryModal');
 const galImg = document.getElementById('galleryImg');
 
@@ -68,15 +68,69 @@ wfModal.querySelector('.wf-next').addEventListener('click', () => showWorkflow(w
 
 function closeAll() {
   [pdfModal, galModal, wfModal].forEach(m => toggleModal(m, false));
-  pdfFrame.src = ''; // stop loading / free memory
+  pdfToken++; pdfPages.textContent = ''; // stop rendering / free memory
+}
+
+// View-only PDFs: pages are drawn onto canvases (pdf.js), so there is no
+// download / print toolbar. Loaded on first use to keep the page light.
+let pdfjsReady = null, pdfToken = 0;
+function loadPdfJs() {
+  if (pdfjsReady) return pdfjsReady;
+  pdfjsReady = new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = 'vendor/pdf.min.js';
+    s.onload = () => {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdf.worker.min.js';
+      resolve(pdfjsLib);
+    };
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+  return pdfjsReady;
+}
+async function showPdf(url) {
+  const token = ++pdfToken;
+  pdfPages.textContent = '';
+  const msg = document.createElement('p');
+  msg.className = 'pdf-msg'; msg.textContent = 'Loading document…';
+  pdfPages.append(msg);
+  try {
+    const lib = await loadPdfJs();
+    const doc = await lib.getDocument(url).promise;
+    if (token !== pdfToken) return;
+    msg.remove();
+    const width = Math.min(pdfPages.clientWidth - 24, 900);
+    for (let n = 1; n <= doc.numPages; n++) {
+      const page = await doc.getPage(n);
+      if (token !== pdfToken) return;
+      const base = page.getViewport({ scale: 1 });
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const vp = page.getViewport({ scale: (width / base.width) * dpr });
+      const cv = document.createElement('canvas');
+      cv.width = vp.width; cv.height = vp.height;
+      cv.style.width = width + 'px'; cv.style.height = (vp.height / dpr) + 'px';
+      pdfPages.append(cv);
+      await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+    }
+  } catch (err) {
+    if (token !== pdfToken) return;
+    msg.textContent = 'Sorry, this document could not be loaded.';
+  }
 }
 
 document.querySelectorAll('[data-pdf]').forEach(b => b.addEventListener('click', () => {
   document.getElementById('pdfTitle').textContent = b.dataset.title || 'Document';
-  // keep the browser's own PDF toolbar so visitors can open / download from it
-  pdfFrame.src = b.dataset.pdf + '#navpanes=0';
   toggleModal(pdfModal, true);
+  showPdf(b.dataset.pdf);
 }));
+// no right-click menu or drag on the document, and block save / print shortcuts while it is open
+pdfPages.addEventListener('contextmenu', e => e.preventDefault());
+pdfPages.addEventListener('dragstart', e => e.preventDefault());
+addEventListener('keydown', e => {
+  if (pdfModal.classList.contains('open') && (e.ctrlKey || e.metaKey) && ['s', 'p'].includes(e.key.toLowerCase())) {
+    e.preventDefault();
+  }
+});
 
 // Gallery: data-gallery="img1.jpg|Caption 1;img2.jpg|Caption 2"
 let slides = [], si = 0;
