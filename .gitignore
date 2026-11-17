@@ -1,0 +1,6 @@
+.venv/
+.vscode/
+# original large images, replaced by optimized .webp versions
+images/detectionimage.png
+images/IloElectra.png
+images/profile.png
