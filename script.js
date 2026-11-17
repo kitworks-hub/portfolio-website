@@ -9,8 +9,65 @@ function toggleModal(m, open) {
   m.setAttribute('aria-hidden', String(!open));
   document.body.style.overflow = document.querySelector('.modal.open') ? 'hidden' : '';
 }
+const wfModal = document.getElementById('workflowModal');
+
+// AI automation workflows: add more objects here and they appear in the pop-up automatically.
+// facebook = the assistant's Facebook page link (empty '' shows "Coming soon").
+// image = swap in the specific workflow screenshot when it's ready.
+const workflows = [
+  {
+    title: 'My Schedule Assistant',
+    summary: 'An AI assistant that manages my Google Calendar through Facebook Messenger: it creates, reschedules and cancels events and sends reminders, all from a chat.',
+    image: 'images/aiassistant.jpg',
+    facebook: 'https://www.facebook.com/profile.php?id=61594683431525',
+    details: [
+      ['Chat platform', 'Facebook Messenger'],
+      ['Database', 'Google Sheets'],
+      ['Scheduling', 'Google Calendar'],
+      ['Deployment', 'Render'],
+      ['Built with', 'n8n, OpenAI']
+    ]
+  }
+];
+
+let wi = 0;
+function showWorkflow(i) {
+  wi = (i + workflows.length) % workflows.length;
+  const w = workflows[wi];
+  document.getElementById('wfTitle').textContent = w.title;
+  document.getElementById('wfSummary').textContent = w.summary;
+  const img = document.getElementById('wfImg');
+  img.src = w.image; img.alt = w.title + ' workflow';
+  const dl = document.getElementById('wfDetails');
+  dl.textContent = '';
+  const row = (label, node) => {
+    const dt = document.createElement('dt'); dt.textContent = label;
+    const dd = document.createElement('dd'); dd.append(node);
+    dl.append(dt, dd);
+  };
+  // Facebook page link
+  if (w.facebook) {
+    const a = document.createElement('a');
+    a.href = w.facebook; a.target = '_blank'; a.rel = 'noopener noreferrer';
+    a.textContent = 'Open Facebook page ↗';
+    row('Facebook page', a);
+  } else {
+    const s = document.createElement('span'); s.className = 'soon'; s.textContent = 'Coming soon';
+    row('Facebook page', s);
+  }
+  w.details.forEach(([k, v]) => row(k, document.createTextNode(v)));
+  document.getElementById('wfCount').textContent = workflows.length > 1 ? `${wi + 1} / ${workflows.length}` : '';
+  wfModal.classList.toggle('single', workflows.length < 2);
+}
+document.querySelectorAll('[data-workflows]').forEach(b => b.addEventListener('click', () => {
+  showWorkflow(0);
+  toggleModal(wfModal, true);
+}));
+wfModal.querySelector('.wf-prev').addEventListener('click', () => showWorkflow(wi - 1));
+wfModal.querySelector('.wf-next').addEventListener('click', () => showWorkflow(wi + 1));
+
 function closeAll() {
-  [pdfModal, galModal].forEach(m => toggleModal(m, false));
+  [pdfModal, galModal, wfModal].forEach(m => toggleModal(m, false));
   pdfFrame.src = ''; // stop loading / free memory
 }
 
@@ -39,7 +96,7 @@ document.querySelectorAll('[data-gallery]').forEach(b => b.addEventListener('cli
 galModal.querySelector('.prev').addEventListener('click', () => showSlide(si - 1));
 galModal.querySelector('.next').addEventListener('click', () => showSlide(si + 1));
 
-[pdfModal, galModal].forEach(m => {
+[pdfModal, galModal, wfModal].forEach(m => {
   m.querySelector('.modal-close').addEventListener('click', closeAll);
   m.addEventListener('click', e => { if (e.target === m) closeAll(); });
 });

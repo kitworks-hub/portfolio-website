@@ -90,7 +90,7 @@
           <h3>AI Automations</h3>
           <p>Automated workflows that use AI to cut repetitive work and save time.</p>
           <div class="tags"><span>AI</span><span>Automation</span><span>Workflows</span></div>
-          <button type="button" class="link" data-gallery="images/aiassistant.jpg|My Schedule Assistant">View workflows →</button>
+          <button type="button" class="link" data-workflows>View workflows →</button>
         </article>
         <article class="card tilt reveal">
           <img class="thumb poster" src="images/detectionimage.webp" alt="Philippine road sign detection poster" loading="lazy" decoding="async" data-gallery="images/detectionimage.webp|Philippine Road Sign Recognition">
@@ -212,6 +212,32 @@
         <button type="button" class="nav-btn next" aria-label="Next">›</button>
       </div>
       <p id="galleryCaption" class="caption"></p>
+    </div>
+  </div>
+
+  <div class="modal" id="workflowModal" aria-hidden="true" role="dialog" aria-label="AI automation workflows">
+    <div class="modal-box workflow">
+      <div class="modal-bar">
+        <span>AI Automations</span>
+        <div>
+          <span id="wfCount" class="count"></span>
+          <button type="button" class="modal-close" aria-label="Close">✕</button>
+        </div>
+      </div>
+      <div class="wf-body">
+        <div class="wf-media">
+          <img id="wfImg" src="" alt="">
+        </div>
+        <div class="wf-info">
+          <h3 id="wfTitle"></h3>
+          <p id="wfSummary"></p>
+          <dl id="wfDetails" class="wf-details"></dl>
+          <div class="wf-nav">
+            <button type="button" class="btn ghost wf-prev">← Previous</button>
+            <button type="button" class="btn ghost wf-next">Next →</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
