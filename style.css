@@ -121,13 +121,13 @@ main:focus { outline: none; }
 .hero-photo::before { /* glowing halo behind the photo */
   content: ''; position: absolute; left: -25%; right: -25%; top: 8%; bottom: 0;
   background:
-    radial-gradient(circle at 50% 38%, rgba(124, 92, 255, .55), rgba(0, 212, 255, .18) 45%, transparent 70%);
+    radial-gradient(circle at 50% 38%, rgba(255, 79, 216, .5), rgba(255, 120, 190, .18) 45%, transparent 70%);
   filter: blur(28px);
 }
 .hero-photo::after { /* neon ring */
   content: ''; position: absolute; left: 50%; top: 14%; width: 78%; aspect-ratio: 1; transform: translateX(-50%);
   border-radius: 50%; border: 2px solid transparent;
-  background: var(--grad) border-box; opacity: .55;
+  background: linear-gradient(135deg, #ff4fd8, #ff8ad0 50%, #c13bff) border-box; opacity: .6;
   -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
   animation: spin 14s linear infinite;
@@ -136,7 +136,7 @@ main:focus { outline: none; }
 @keyframes photoIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
 .hero-photo img {
   position: relative; z-index: 1; height: 100%; width: auto; display: block;
-  filter: drop-shadow(0 0 26px rgba(124, 92, 255, .4));
+  filter: drop-shadow(0 0 26px rgba(255, 79, 216, .4));
   -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
 }
