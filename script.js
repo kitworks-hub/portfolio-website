@@ -142,9 +142,12 @@ function showSlide(i) {
   document.getElementById('galleryCount').textContent = slides.length > 1 ? `${si + 1} / ${slides.length}` : '';
   galModal.classList.toggle('single', slides.length < 2);
 }
-document.querySelectorAll('[data-gallery]').forEach(b => b.addEventListener('click', () => {
+document.querySelectorAll('[data-gallery]').forEach(b => b.addEventListener('click', e => {
+  const tile = e.target.closest('[data-start]');
+  if (b.classList.contains('collage') && !tile) return;
   slides = b.dataset.gallery.split(';').map(s => { const [src, cap] = s.split('|'); return { src, cap: cap || '' }; });
-  showSlide(0);
+  document.getElementById('galleryTitle').textContent = b.dataset.title || 'Gallery';
+  showSlide(tile ? +tile.dataset.start : 0);
   toggleModal(galModal, true);
 }));
 galModal.querySelector('.prev').addEventListener('click', () => showSlide(si - 1));

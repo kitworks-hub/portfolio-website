@@ -287,6 +287,13 @@ button.btn { font: inherit; font-weight: 600; cursor: pointer; }
 img.thumb { width: 100%; display: block; object-fit: cover; animation: none; }
 img.thumb.contain { object-fit: contain; }
 img.thumb.poster { object-position: top center; cursor: zoom-in; }
+.collage { display: grid; grid-template-columns: 1.2fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; height: 200px; margin-bottom: 18px; }
+.collage .tile { position: relative; padding: 0; border: 0; border-radius: 10px; overflow: hidden; background: #0b0b13; cursor: zoom-in; }
+.collage .tile-main { grid-row: 1 / 3; }
+.collage img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
+.collage .tile-main img { object-position: top center; }
+.collage .tile:hover img, .collage .tile:focus-visible img { transform: scale(1.06); }
+.collage .tile-more { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(11, 11, 19, .6); color: #fff; font: 700 1.3rem 'Space Grotesk', sans-serif; }
 button.link { background: none; border: 0; font: inherit; font-weight: 500; color: var(--text); cursor: pointer; padding: 0; }
 button.link:hover { color: var(--c); }
 .modal-box.gallery { height: auto; max-height: 92vh; }
