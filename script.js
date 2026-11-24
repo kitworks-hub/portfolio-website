@@ -10,6 +10,7 @@ function toggleModal(m, open) {
   document.body.style.overflow = document.querySelector('.modal.open') ? 'hidden' : '';
 }
 const wfModal = document.getElementById('workflowModal');
+const pbModal = document.getElementById('photobookModal');
 
 // AI automation workflows: add more objects here and they appear in the pop-up automatically.
 // facebook = the assistant's Facebook page link (empty '' shows "Coming soon").
@@ -67,7 +68,7 @@ wfModal.querySelector('.wf-prev').addEventListener('click', () => showWorkflow(w
 wfModal.querySelector('.wf-next').addEventListener('click', () => showWorkflow(wi + 1));
 
 function closeAll() {
-  [pdfModal, galModal, wfModal].forEach(m => toggleModal(m, false));
+  [pdfModal, galModal, wfModal, pbModal].forEach(m => toggleModal(m, false));
   pdfToken++; pdfPages.textContent = ''; // stop rendering / free memory
 }
 
@@ -142,18 +143,22 @@ function showSlide(i) {
   document.getElementById('galleryCount').textContent = slides.length > 1 ? `${si + 1} / ${slides.length}` : '';
   galModal.classList.toggle('single', slides.length < 2);
 }
-document.querySelectorAll('[data-gallery]').forEach(b => b.addEventListener('click', e => {
-  const tile = e.target.closest('[data-start]');
-  if (b.classList.contains('collage') && !tile) return;
+document.querySelectorAll('[data-gallery]').forEach(b => b.addEventListener('click', () => {
   slides = b.dataset.gallery.split(';').map(s => { const [src, cap] = s.split('|'); return { src, cap: cap || '' }; });
   document.getElementById('galleryTitle').textContent = b.dataset.title || 'Gallery';
-  showSlide(tile ? +tile.dataset.start : 0);
+  showSlide(0);
   toggleModal(galModal, true);
 }));
 galModal.querySelector('.prev').addEventListener('click', () => showSlide(si - 1));
 galModal.querySelector('.next').addEventListener('click', () => showSlide(si + 1));
 
-[pdfModal, galModal, wfModal].forEach(m => {
+// Photobook: scroll-down photo album
+document.querySelectorAll('[data-photobook]').forEach(b => b.addEventListener('click', () => {
+  pbModal.querySelector('.pb-pages').scrollTop = 0;
+  toggleModal(pbModal, true);
+}));
+
+[pdfModal, galModal, wfModal, pbModal].forEach(m => {
   m.querySelector('.modal-close').addEventListener('click', closeAll);
   m.addEventListener('click', e => { if (e.target === m) closeAll(); });
 });
