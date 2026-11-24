@@ -251,9 +251,9 @@ function resize() {
     vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4
   }));
 }
-addEventListener('resize', resize); resize();
+addEventListener('resize', () => { resize(); if (!raf) draw(); }); resize();
 
-(function draw() {
+function draw() {
   ctx.clearRect(0, 0, W, H);
   for (const d of dots) {
     d.x += d.vx; d.y += d.vy;
@@ -278,8 +278,20 @@ addEventListener('resize', resize); resize();
       ctx.beginPath(); ctx.moveTo(dots[i].x, dots[i].y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
     }
   }
-  requestAnimationFrame(draw);
-})();
+}
+
+// Animate only when the tab is visible and the visitor hasn't asked for reduced motion.
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let raf = 0;
+function loop() { draw(); raf = requestAnimationFrame(loop); }
+function syncAnimation() {
+  cancelAnimationFrame(raf); raf = 0;
+  if (reduceMotion.matches || document.hidden) { if (reduceMotion.matches) draw(); return; }
+  raf = requestAnimationFrame(loop);
+}
+document.addEventListener('visibilitychange', syncAnimation);
+reduceMotion.addEventListener('change', syncAnimation);
+syncAnimation();
 
 // Copy email to clipboard
 document.querySelectorAll('[data-copy]').forEach(btn => {
