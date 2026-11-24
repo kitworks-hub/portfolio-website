@@ -127,11 +127,6 @@ document.querySelectorAll('[data-pdf]').forEach(b => b.addEventListener('click',
 // no right-click menu or drag on the document, and block save / print shortcuts while it is open
 pdfPages.addEventListener('contextmenu', e => e.preventDefault());
 pdfPages.addEventListener('dragstart', e => e.preventDefault());
-addEventListener('keydown', e => {
-  if (pdfModal.classList.contains('open') && (e.ctrlKey || e.metaKey) && ['s', 'p'].includes(e.key.toLowerCase())) {
-    e.preventDefault();
-  }
-});
 
 // Gallery: data-gallery="img1.jpg|Caption 1;img2.jpg|Caption 2"
 let slides = [], si = 0;
@@ -162,11 +157,16 @@ document.querySelectorAll('[data-photobook]').forEach(b => b.addEventListener('c
   m.querySelector('.modal-close').addEventListener('click', closeAll);
   m.addEventListener('click', e => { if (e.target === m) closeAll(); });
 });
+// Single keyboard handler: Escape closes modals + mobile menu, arrows drive the gallery,
+// and save / print shortcuts are blocked while the PDF is open.
 addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeAll();
+  if (e.key === 'Escape') { closeAll(); setMenu(false); }
   if (galModal.classList.contains('open')) {
     if (e.key === 'ArrowLeft') showSlide(si - 1);
     if (e.key === 'ArrowRight') showSlide(si + 1);
+  }
+  if (pdfModal.classList.contains('open') && (e.ctrlKey || e.metaKey) && ['s', 'p'].includes(e.key.toLowerCase())) {
+    e.preventDefault();
   }
 });
 
@@ -316,7 +316,6 @@ function setMenu(open) {
 }
 toggle.addEventListener('click', () => setMenu(!nav.classList.contains('menu-open')));
 menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
-addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
 addEventListener('resize', () => { if (innerWidth > 760) setMenu(false); });
 document.addEventListener('click', e => {
   if (nav.classList.contains('menu-open') && !nav.contains(e.target)) setMenu(false);
